@@ -60,7 +60,7 @@ class TasksController extends Controller
         // メッセージを作成
         $task = new Task;
         $task->content = $request->content;
-        $task->status = $task->status;
+        $task->status = $request->status;
         $task->save();
         
         //トップページへのリダイレクト
@@ -123,7 +123,7 @@ class TasksController extends Controller
         $task = Task::findOrFail($id);
         // メッセージを更新
         $task->content = $request->content;
-        $task->status = $task->status;
+        $task->status = $request->status;
         $task->save();
 
         // トップページへリダイレクトさせる
