@@ -16,13 +16,19 @@ class TasksController extends Controller
     // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        // タスク一覧を取得
-        $tasks = Task::all();
+        if (\Auth::check()) { // 認証済みの場合        
+            // タスク一覧を取得
+            $tasks = Task::all();
+            
+            //タスク一覧ビューでそれを表示
+            return view('tasks.index', [
+                'tasks' =>$tasks,
+            ]);
+        }
+        else{
+            return view('welcome');
+        }
         
-        //タスク一覧ビューでそれを表示
-        return view('tasks.index', [
-            'tasks' =>$tasks,
-        ]);
     }
 
     /**
@@ -57,11 +63,19 @@ class TasksController extends Controller
             'status' => 'required|max:10',
         ]);
         
+        // 認証済みユーザ（閲覧者）の投稿として作成（リクエストされた値をもとに作成）
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);        
+        
+        /*
         // メッセージを作成
         $task = new Task;
         $task->content = $request->content;
         $task->status = $request->status;
         $task->save();
+        */
         
         //トップページへのリダイレクト
         return redirect('/');
