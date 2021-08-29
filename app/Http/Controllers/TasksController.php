@@ -16,7 +16,23 @@ class TasksController extends Controller
     // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        if (\Auth::check()) { // 認証済みの場合        
+        if (\Auth::check()) { // 認証済みの場合
+            
+    
+            //↓で記載の一覧取得→表示の処理を、「認証済みユーザーを取得」→「そのユーザーのタスクの一覧を取得」→表示とする
+            // 認証済みユーザを取得
+            $user = \Auth::user();
+            
+            // 当該ユーザのタスクの一覧を取得
+            $tasks = $user ->tasks;
+            
+            //タスク一覧ビューで表示
+            return view('tasks.index', [
+                'tasks' =>$tasks,
+            ]);
+            
+            
+            /*元のソース
             // タスク一覧を取得
             $tasks = Task::all();
             
@@ -24,6 +40,7 @@ class TasksController extends Controller
             return view('tasks.index', [
                 'tasks' =>$tasks,
             ]);
+            */
         }
         else{
             return view('welcome');
@@ -91,12 +108,29 @@ class TasksController extends Controller
     public function show($id)
     {
         // idの値でタスクを検索して取得
+        $task = \App\Task::findOrFail($id);
+
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
+        if (\Auth::id() === $task->user_id) {
+            $task->show();
+            return view('tasks.show', [
+            'task' => $task,
+        ]);
+    }
+        
+
+        // 前のURLへリダイレクトさせる
+        return back();        
+        
+        /*元のソース
+        // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
         // タスク詳細ビューでそれを表示
         return view('tasks.show', [
             'task' => $task,
         ]);
+        */
     }
 
     /**
