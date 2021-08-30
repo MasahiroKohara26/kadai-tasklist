@@ -42,8 +42,8 @@ class TasksController extends Controller
                 'tasks' =>$tasks,
             ]);
             */
-        }else{
-            return view('welcome');
+        } else {
+        return view('welcome');
         }
     }
 
@@ -114,24 +114,9 @@ class TasksController extends Controller
             $task->tasks;
             return view('tasks.show', [
             'task' => $task,
-        ]);
-    }else{
-        return redirect('/');
-    }
-        
-
-        // 前のURLへリダイレクトさせる
-        return back();        
-        
-        /* 元のソース
-        // idの値でタスクを検索して取得
-        $task = Task::findOrFail($id);
-
-        // タスク詳細ビューでそれを表示
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
-        */
+            ]);
+        } else {
+        return redirect('/');}
     }
 
     /**
@@ -154,7 +139,7 @@ class TasksController extends Controller
         ]);
     }
         // 前のURLへリダイレクトさせる
-        return back(); 
+        return redirect('/'); 
     }
 
     /**
@@ -167,26 +152,43 @@ class TasksController extends Controller
     // putまたはpatchで taskss/（任意のid）にアクセスされた場合の「更新処理」
     public function update(Request $request, $id)
     {
-        if (\Auth::check()) {
-        // バリデーション
         $request->validate([
-            'content' => 'required',   // 追加
-            'status' => 'required|max:10',
+        'content' => 'required',
+        'status' => 'required|max:10',
         ]);
         
-        // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
+        
+        if (\Auth::id() === $task->user_id) {
+            $task->content = $request->content;
+            $task->status = $request->status;
+            $task->save();
+            
+            return redirect('/');
+        } else {
+        return redirect('/');
+        }
+
+        //if (\Auth::check()) {
+        // バリデーション
+        //$request->validate([
+        //    'content' => 'required',   // 追加
+        //    'status' => 'required|max:10',
+        //]);
+        
+        // idの値でタスクを検索して取得
+        //$task = Task::findOrFail($id);
         // メッセージを更新
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
+        //$task->content = $request->content;
+        //$task->status = $request->status;
+        //$task->save();
 
         // トップページへリダイレクトさせる
-        return redirect('/');
-    }
-    else{
-            return redirect('/');
-    }
+        //return redirect('/');
+        //}
+        //else{
+        //    return redirect('/');
+        //}
     }
 
     /**
@@ -198,16 +200,24 @@ class TasksController extends Controller
     // deleteでtasks/（任意のid）にアクセスされた場合の「削除処理」
     public function destroy($id)
     {
-        if (\Auth::check()) { 
-            // idの値でメッセージを検索して取得
-            $task = Task::findOrFail($id);
-            // メッセージを削除
+        $task = Task::findOrFail($id);
+        
+        if (\Auth::id() === $task->user_id) {
             $task->delete();
-    
-            // トップページへリダイレクトさせる
             return redirect('/');
-            }else{
-            return redirect('/');
+        } else {
+        return redirect('/');
         }
+        //if (\Auth::check()) { 
+        //    // idの値でメッセージを検索して取得
+        //    $task = Task::findOrFail($id);
+        //    // メッセージを削除
+        //    $task->delete();
+    
+        // トップページへリダイレクトさせる
+        //    return redirect('/');
+        //    }else{
+        //    return redirect('/');
+        //}
     }
 }
