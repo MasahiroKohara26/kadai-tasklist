@@ -123,7 +123,7 @@ class TasksController extends Controller
         // 前のURLへリダイレクトさせる
         return back();        
         
-        /*元のソース
+        /* 元のソース
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
