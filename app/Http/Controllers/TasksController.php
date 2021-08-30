@@ -42,11 +42,9 @@ class TasksController extends Controller
                 'tasks' =>$tasks,
             ]);
             */
-        }
-        else{
+        }else{
             return view('welcome');
         }
-        
     }
 
     /**
@@ -117,6 +115,8 @@ class TasksController extends Controller
             return view('tasks.show', [
             'task' => $task,
         ]);
+    }else{
+        return redirect('/');
     }
         
 
@@ -167,6 +167,7 @@ class TasksController extends Controller
     // putまたはpatchで taskss/（任意のid）にアクセスされた場合の「更新処理」
     public function update(Request $request, $id)
     {
+        if (\Auth::check()) {
         // バリデーション
         $request->validate([
             'content' => 'required',   // 追加
@@ -183,6 +184,10 @@ class TasksController extends Controller
         // トップページへリダイレクトさせる
         return redirect('/');
     }
+    else{
+            return redirect('/');
+    }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -193,12 +198,16 @@ class TasksController extends Controller
     // deleteでtasks/（任意のid）にアクセスされた場合の「削除処理」
     public function destroy($id)
     {
-        // idの値でメッセージを検索して取得
-        $task = Task::findOrFail($id);
-        // メッセージを削除
-        $task->delete();
-
-        // トップページへリダイレクトさせる
-        return redirect('/');
+        if (\Auth::check()) { 
+            // idの値でメッセージを検索して取得
+            $task = Task::findOrFail($id);
+            // メッセージを削除
+            $task->delete();
+    
+            // トップページへリダイレクトさせる
+            return redirect('/');
+            }else{
+            return redirect('/');
+        }
     }
 }
