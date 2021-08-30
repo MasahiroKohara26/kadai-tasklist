@@ -28,6 +28,7 @@ class TasksController extends Controller
             
             //タスク一覧ビューで表示
             return view('tasks.index', [
+                'user' =>$user,
                 'tasks' =>$tasks,
             ]);
             
@@ -112,7 +113,7 @@ class TasksController extends Controller
 
         // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
         if (\Auth::id() === $task->user_id) {
-            $task->show();
+            $task->tasks;
             return view('tasks.show', [
             'task' => $task,
         ]);
